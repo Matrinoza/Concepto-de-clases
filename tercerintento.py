@@ -1,5 +1,3 @@
-import random
-
 class ConjuntoLetras:
     def __init__(self, contenido):
         self.letras = set(contenido)
@@ -10,8 +8,8 @@ class ConjuntoLetras:
     def diferencia(self, otro):
         return ConjuntoLetras(self.letras.difference(otro.letras))
 
-    def contiene(self, letra):
-        return letra in self.letras
+    def interseccion(self, otro):
+        return self.letras.intersection(otro.letras)
 
     def como_lista(self):
         return list(self.letras)
@@ -24,28 +22,29 @@ class S(ConjuntoLetras):
         super().__init__(abecedario_minusculas + abecedario_mayusculas)
 
 
-# Entrada de datos
-nombre = input("Ingrese su nombre: ")
-apellido = input("Ingrese su apellido: ")
+# Usuario
+nombre = input("Nombre: ")
+apellido = input("Apellido: ")
 
-# Crear conjuntos
+# Conjuntos
 conjunto_s = S()
 conjunto_a = ConjuntoLetras(nombre)
 conjunto_b = ConjuntoLetras(apellido)
 union_ab = conjunto_a.union(conjunto_b)
 conjunto_c = conjunto_s.diferencia(union_ab)
 
-# Verificar que C tenga al menos 8 letras
-if len(conjunto_c.letras) < 8:
-    print("❌ No se puede generar una contraseña: muy pocas letras disponibles.")
-else:
-    # Generar contraseña de 8 caracteres
-    contraseña_generada = ''.join(random.sample(conjunto_c.como_lista(), k=8))
-    print("✅ Contraseña generada:", contraseña_generada)
+print("\nLetras prohibidas (A ∪ B):", sorted(union_ab.letras))
+print("Letras permitidas (C = S - (A ∪ B)):", sorted(conjunto_c.letras))
 
-    # Verificar que no tenga letras del nombre o apellido
-    letras_invalidas = set(contraseña_generada).intersection(union_ab.letras)
-    if letras_invalidas:
-        print("⚠️ Advertencia: la contraseña contiene letras del nombre o apellido:", ', '.join(letras_invalidas))
-    else:
-        print("✅ La contraseña cumple correctamente con los criterios.")
+# Como elegir contraseña
+contraseña = input("\nIngrese la contraseña que desea utilizar: ")
+
+# Verificacion
+conjunto_contraseña = ConjuntoLetras(contraseña)
+letras_invalidas = conjunto_contraseña.interseccion(union_ab)
+
+if letras_invalidas:
+    print("❌ Contraseña no válida.")
+    print("Contiene las letras :", ', '.join(letras_invalidas))
+else:
+    print("✅ Contraseña válida.")
